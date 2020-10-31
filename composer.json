@@ -1,0 +1,24 @@
+{
+  "name": "asjustas/jv-rest-bundle",
+  "type": "symfony-bundle",
+  "autoload":{
+    "psr-4":{
+      "AJ\\RestBundle\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "psr/log": "^1.0",
+    "symfony/dependency-injection": "^4.4|^5.0",
+    "symfony/event-dispatcher": "^4.4|^5.0",
+    "symfony/framework-bundle": "^4.4.1|^5.0",
+    "symfony/http-foundation": "^4.4|^5.0",
+    "symfony/http-kernel": "^4.4|^5.0",
+    "symfony/console": "^4.4|^5.0",
+    "symfony/security-core": "^3.4|^4.3|^5.0",
+    "symfony/validator": "^4.4|^5.0",
+    "doctrine/annotations": "^1.11",
+    "jms/serializer-bundle": "^3.7"
+  }
+}

@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  AJ\RestBundle\Http\RequestDTOResolver:
+    tags:
+      - { name: controller.request_value_resolver, priority: 50 }
+
+  AJ\RestBundle\EventListener\ApiExceptionListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
