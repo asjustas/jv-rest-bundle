@@ -1,6 +1,8 @@
 {
   "name": "asjustas/jv-rest-bundle",
   "type": "symfony-bundle",
+  "description": "This Bundle provides helpers to develop rest api",
+  "keywords": ["rest", "symfony"],
   "license": "MIT",
   "autoload":{
     "psr-4":{
