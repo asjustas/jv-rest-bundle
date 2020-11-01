@@ -4,7 +4,7 @@ namespace AJ\RestBundle\Http;
 
 use AJ\RestBundle\DTOResolver\DTOResolverInterface;
 use AJ\RestBundle\Exception\ApiException;
-use AJ\RestBundle\Factory\BadRequestDTOFactory;
+use AJ\RestBundle\Factory\BadRequestResponseDTOFactory;
 use Exception;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class RequestDTOResolver implements ArgumentValueResolverInterface
 {
     private ValidatorInterface $validator;
-    private BadRequestDTOFactory $badRequestDTOFactory;
+    private BadRequestResponseDTOFactory $badRequestDTOFactory;
 
     /**
      * @var DTOResolverInterface[]
@@ -24,7 +24,7 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
 
     public function __construct(
         ValidatorInterface $validator,
-        BadRequestDTOFactory $badRequestDTOFactory,
+        BadRequestResponseDTOFactory $badRequestDTOFactory,
         iterable $dtoResolvers
     ) {
         $this->validator = $validator;
