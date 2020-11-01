@@ -2,9 +2,10 @@
 
 namespace AJ\RestBundle\Http;
 
-use AJ\RestBundle\Exception\BadRequestApiException;
+use AJ\RestBundle\DTOResolver\DTOResolverInterface;
+use AJ\RestBundle\Exception\ApiException;
+use AJ\RestBundle\Factory\BadRequestDTOFactory;
 use Exception;
-use JMS\Serializer\SerializerInterface;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
@@ -13,21 +14,29 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestDTOResolver implements ArgumentValueResolverInterface
 {
-    private SerializerInterface $serializer;
     private ValidatorInterface $validator;
+    private BadRequestDTOFactory $badRequestDTOFactory;
+
+    /**
+     * @var DTOResolverInterface[]
+     */
+    private iterable $dtoResolvers;
 
     public function __construct(
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        BadRequestDTOFactory $badRequestDTOFactory,
+        iterable $dtoResolvers
     ) {
-        $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->badRequestDTOFactory = $badRequestDTOFactory;
+        $this->dtoResolvers = $dtoResolvers;
     }
 
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return $this
-            ->implementsInterface($argument, RequestDTOInterface::class);
+        $reflection = new ReflectionClass($argument->getType());
+
+        return $reflection->implementsInterface(RequestDTOInterface::class);
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument)
@@ -36,17 +45,9 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
         $errors = $this->validator->validate($dto);
 
         if (count($errors) > 0) {
-            $messages = [];
+            $responseDto = $this->badRequestDTOFactory->build($errors);
 
-            foreach ($errors as $validation) {
-                $messages[$validation->getPropertyPath()] = $validation->getMessage();
-            }
-
-            throw new BadRequestApiException(
-                'bad_request',
-                'Bad request received',
-                $messages
-            );
+            throw new ApiException($responseDto, 400);
         }
 
         yield $dto;
@@ -54,36 +55,12 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
 
     private function fillDto(Request $request, ArgumentMetadata $argument): object
     {
-        if ($this->implementsInterface($argument, RequestBodyAwareDTOInterface::class)) {
-            $dtoClass = $argument->getType();
-
-            if (null === $request->getContent()) {
-                return new $dtoClass();
+        foreach ($this->dtoResolvers as $dtoResolver) {
+            if ($dtoResolver->supports($argument)) {
+                return $dtoResolver->resolve($request, $argument);
             }
-
-            return $this
-                ->serializer
-                ->deserialize($request->getContent(), $dtoClass, 'json');
-        }
-
-        if ($this->implementsInterface($argument, QueryAwareDTOInterface::class)) {
-            $dtoClass = $argument->getType();
-            $json = json_encode($request->query->all(), JSON_THROW_ON_ERROR);
-
-            return $this
-                ->serializer
-                ->deserialize($json, $dtoClass, 'json');
         }
 
         throw new Exception('Can not fill DTO (use more specific interface)');
-    }
-
-    private function implementsInterface(
-        ArgumentMetadata $argument,
-        string $interface
-    ): bool {
-        $reflection = new ReflectionClass($argument->getType());
-
-        return $reflection->implementsInterface($interface);
     }
 }

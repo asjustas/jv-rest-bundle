@@ -4,7 +4,17 @@ services:
     autoconfigure: true
     public: false
 
+  AJ\RestBundle\Factory\BadRequestDTOFactory: ~
+
+  AJ\RestBundle\DTOResolver\QueryDTOResolver:
+    tags: [ 'jv_rest.dto_resolver' ]
+
+  AJ\RestBundle\DTOResolver\RequestBodyDTOResolver:
+    tags: [ 'jv_rest.dto_resolver' ]
+
   AJ\RestBundle\Http\RequestDTOResolver:
+    arguments:
+      $dtoResolvers: !tagged_iterator { tag: jv_rest.dto_resolver, default_priority_method: getPriority }
     tags:
       - { name: controller.request_value_resolver, priority: 50 }
 
