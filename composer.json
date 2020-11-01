@@ -1,6 +1,7 @@
 {
   "name": "asjustas/jv-rest-bundle",
   "type": "symfony-bundle",
+  "license": "MIT",
   "autoload":{
     "psr-4":{
       "AJ\\RestBundle\\": "src/"
