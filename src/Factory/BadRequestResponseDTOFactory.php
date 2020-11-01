@@ -6,7 +6,7 @@ use AJ\RestBundle\DTO\BadRequestResponseDTO;
 use AJ\RestBundle\Http\ResponseDTOInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class BadRequestDTOFactory
+class BadRequestResponseDTOFactory
 {
     public function build(ConstraintViolationListInterface $errors): ResponseDTOInterface
     {
