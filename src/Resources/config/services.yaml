@@ -4,7 +4,7 @@ services:
     autoconfigure: true
     public: false
 
-  AJ\RestBundle\Factory\BadRequestDTOFactory: ~
+  AJ\RestBundle\Build\BadRequestResponseDTOBuilder: ~
 
   AJ\RestBundle\DTOResolver\QueryDTOResolver:
     tags: [ 'jv_rest.dto_resolver' ]

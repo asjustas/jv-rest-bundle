@@ -2,10 +2,11 @@
 
 namespace AJ\RestBundle\Http;
 
+use AJ\RestBundle\Build\BadRequestResponseDTOBuilder;
 use AJ\RestBundle\DTOResolver\DTOResolverInterface;
 use AJ\RestBundle\Exception\ApiException;
-use AJ\RestBundle\Factory\BadRequestResponseDTOFactory;
 use Exception;
+use Generator;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class RequestDTOResolver implements ArgumentValueResolverInterface
 {
     private ValidatorInterface $validator;
-    private BadRequestResponseDTOFactory $badRequestDTOFactory;
+    private BadRequestResponseDTOBuilder $badRequestResponseDTOBuilder;
 
     /**
      * @var DTOResolverInterface[]
@@ -24,28 +25,28 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
 
     public function __construct(
         ValidatorInterface $validator,
-        BadRequestResponseDTOFactory $badRequestDTOFactory,
+        BadRequestResponseDTOBuilder $badRequestResponseDTOBuilder,
         iterable $dtoResolvers
     ) {
         $this->validator = $validator;
-        $this->badRequestDTOFactory = $badRequestDTOFactory;
+        $this->badRequestResponseDTOBuilder = $badRequestResponseDTOBuilder;
         $this->dtoResolvers = $dtoResolvers;
     }
 
-    public function supports(Request $request, ArgumentMetadata $argument)
+    public function supports(Request $request, ArgumentMetadata $argument): bool
     {
         $reflection = new ReflectionClass($argument->getType());
 
         return $reflection->implementsInterface(RequestDTOInterface::class);
     }
 
-    public function resolve(Request $request, ArgumentMetadata $argument)
+    public function resolve(Request $request, ArgumentMetadata $argument): Generator
     {
         $dto = $this->fillDto($request, $argument);
         $errors = $this->validator->validate($dto);
 
         if (count($errors) > 0) {
-            $responseDto = $this->badRequestDTOFactory->build($errors);
+            $responseDto = $this->badRequestResponseDTOBuilder->build($errors);
 
             throw new ApiException($responseDto, 400);
         }

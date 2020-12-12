@@ -1,12 +1,12 @@
 <?php
 
-namespace AJ\RestBundle\Factory;
+namespace AJ\RestBundle\Build;
 
 use AJ\RestBundle\DTO\BadRequestResponseDTO;
 use AJ\RestBundle\Http\ResponseDTOInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class BadRequestResponseDTOFactory
+class BadRequestResponseDTOBuilder
 {
     public function build(ConstraintViolationListInterface $errors): ResponseDTOInterface
     {

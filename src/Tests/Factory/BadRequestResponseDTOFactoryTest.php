@@ -3,7 +3,7 @@
 namespace AJ\RestBundle\Tests\Factory;
 
 use AJ\RestBundle\DTO\BadRequestResponseDTO;
-use AJ\RestBundle\Factory\BadRequestResponseDTOFactory;
+use AJ\RestBundle\Build\BadRequestResponseDTOBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -39,7 +39,7 @@ class BadRequestResponseDTOFactoryTest extends TestCase
         $this
             ->assertEquals(
                 $expectedDto,
-                (new BadRequestResponseDTOFactory())->build($errors)
+                (new BadRequestResponseDTOBuilder())->build($errors)
             );
     }
 }
