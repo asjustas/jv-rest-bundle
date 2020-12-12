@@ -35,6 +35,10 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
+        if (in_array($argument->getType(), DTOResolverInterface::SIMPLE_TYPES, true)) {
+            return false;
+        }
+
         $reflection = new ReflectionClass($argument->getType());
 
         return $reflection->implementsInterface(RequestDTOInterface::class);
